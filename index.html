@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SPACE MISSION 3D – NASA EXPLORER</title>
+    <meta name="description" content="A 3D NASA Space Apps Hackathon simulation game combining spacecraft engineering, planetary exploration, and scientific discovery.">
+    <meta name="theme-color" content="#040814">
+    <meta property="og:title" content="SPACE MISSION 3D – NASA EXPLORER">
+    <meta property="og:description" content="A playable 3D space exploration and spacecraft engineering simulation built with Three.js for the NASA Space Apps Hackathon.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 3D WebGL Three.js Container -->
+    <div id="canvas-container"></div>
+
+    <!-- 3D Screen Space Navigation Target Reticle -->
+    <div id="target-reticle">
+        <span id="target-reticle-dist">0 km</span>
+    </div>
+
+    <!-- Top NASA Quick Navigation & Audio Bar -->
+    <div class="top-nav-bar">
+        <button id="btn-audio-toggle" class="nav-icon-btn" title="Toggle Synthesized Audio">&#128266; AUDIO: ON</button>
+        <button id="btn-fullscreen-toggle" class="nav-icon-btn" title="Toggle Fullscreen">&#x26F6; FULLSCREEN</button>
+    </div>
+
+    <!-- ======================================================================
+         1. MAIN MENU PANEL
+         ====================================================================== -->
+    <div id="panel-main-menu" class="ui-panel">
+        <div class="hero-box">
+            <div class="nasa-logo-badge">
+                <span class="nasa-dot"></span>
+                <span>NASA SPACE APPS HACKATHON</span>
+            </div>
+            <h1 class="hero-title">SPACE MISSION 3D</h1>
+            <h2 class="hero-sub">NASA EXPLORER &bull; SPACECRAFT SIMULATOR</h2>
+
+            <div class="menu-button-group">
+                <button class="nasa-btn btn-primary" data-goto="panel-mission-select">
+                    &#9658; START MISSION
+                </button>
+                <button class="nasa-btn" data-goto="panel-customizer">
+                    &#9881; SPACECRAFT DESIGN & CAD
+                </button>
+                <button class="nasa-btn" data-goto="panel-team-mode">
+                    &#128101; TEAM COOPERATIVE MODE
+                </button>
+                <button class="nasa-btn" data-goto="panel-tutorial">
+                    &#128214; HOW TO PLAY & MANUAL
+                </button>
+                <button class="nasa-btn" data-goto="panel-leaderboard">
+                    &#127942; LEADERBOARD & ARCHIVES
+                </button>
+            </div>
+
+            <div class="difficulty-selector">
+                <button class="diff-btn" data-diff="beginner">BEGINNER</button>
+                <button class="diff-btn active" data-diff="intermediate">INTERMEDIATE</button>
+                <button class="diff-btn" data-diff="advanced">ADVANCED (REAL DYNAMICS)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         2. MISSION SELECTION PANEL
+         ====================================================================== -->
+    <div id="panel-mission-select" class="ui-panel hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <h2 class="panel-title">FLIGHT DIRECTORY: SELECT MISSION</h2>
+                <button class="nav-icon-btn" data-goto="panel-main-menu">&#8592; BACK</button>
+            </div>
+            <div class="panel-body-scroll">
+                <div class="missions-grid">
+                    <!-- Mission 1: Moon -->
+                    <div class="mission-card" onclick="window.NASA_GAME.setupMissionWorld('moon')">
+                        <div class="card-top">
+                            <span class="card-target-tag">TARGET: THE MOON</span>
+                            <h3 class="card-title">Moon Exploration</h3>
+                            <h4 style="font-size:0.85rem; color:var(--text-cyan); margin-bottom:8px;">Artemis Vanguard</h4>
+                            <p class="card-brief">
+                                Launch from Earth orbit, execute Trans-Lunar Injection (TLI), achieve Lunar Orbit Insertion, survey Shackleton Crater for water ice, and deploy surface lander.
+                            </p>
+                        </div>
+                        <div class="card-meta-row">
+                            <span>DIFF: INTERMEDIATE</span>
+                            <span>BUDGET: $350M</span>
+                        </div>
+                    </div>
+
+                    <!-- Mission 2: Mars -->
+                    <div class="mission-card" onclick="window.NASA_GAME.setupMissionWorld('mars')">
+                        <div class="card-top">
+                            <span class="card-target-tag">TARGET: MARS</span>
+                            <h3 class="card-title">Mars Exploration</h3>
+                            <h4 style="font-size:0.85rem; color:var(--text-cyan); margin-bottom:8px;">Ares Odyssey</h4>
+                            <p class="card-brief">
+                                Interplanetary cruise to Mars. Endure deep space radiation storms, execute orbital aerobraking, map Jezero Crater delta, and sample atmospheric aerosols.
+                            </p>
+                        </div>
+                        <div class="card-meta-row">
+                            <span>DIFF: ADVANCED</span>
+                            <span>BUDGET: $450M</span>
+                        </div>
+                    </div>
+
+                    <!-- Mission 3: Earth Observation -->
+                    <div class="mission-card" onclick="window.NASA_GAME.setupMissionWorld('earth')">
+                        <div class="card-top">
+                            <span class="card-target-tag">TARGET: LOW EARTH ORBIT</span>
+                            <h3 class="card-title">Earth Observation</h3>
+                            <h4 style="font-size:0.85rem; color:var(--text-cyan); margin-bottom:8px;">Terra Sentinel</h4>
+                            <p class="card-brief">
+                                Deploy into Sun-Synchronous Polar Orbit. Rendezvous with the ISS, calibrate hyperspectral climate sensors, and track super-cyclone storm systems.
+                            </p>
+                        </div>
+                        <div class="card-meta-row">
+                            <span>DIFF: BEGINNER</span>
+                            <span>BUDGET: $220M</span>
+                        </div>
+                    </div>
+
+                    <!-- Mission 4: Asteroid Exploration -->
+                    <div class="mission-card" onclick="window.NASA_GAME.setupMissionWorld('asteroid')">
+                        <div class="card-top">
+                            <span class="card-target-tag">TARGET: ASTEROID BELT</span>
+                            <h3 class="card-title">Asteroid Exploration</h3>
+                            <h4 style="font-size:0.85rem; color:var(--text-cyan); margin-bottom:8px;">Psyche Harvester</h4>
+                            <p class="card-brief">
+                                Venture into the chaotic Asteroid Belt to rendezvous with 16 Psyche. Maneuver through tumbling boulders and execute Touch-and-Go (TAG) sample retrieval.
+                            </p>
+                        </div>
+                        <div class="card-meta-row">
+                            <span>DIFF: ADVANCED</span>
+                            <span>BUDGET: $380M</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         3. SPACECRAFT DESIGN & CAD CONFIGURATOR PANEL
+         ====================================================================== -->
+    <div id="panel-customizer" class="ui-panel hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">SPACECRAFT ENGINEERING BAY & CAD</h2>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+                        Configure spacecraft subsystems. Balance mass, power, cost, specific impulse, and scientific capability.
+                    </p>
+                </div>
+                <button class="nav-icon-btn" data-goto="panel-main-menu">&#8592; BACK</button>
+            </div>
+
+            <div class="panel-body-scroll">
+                <div id="customizer-warning-banner" class="warning-banner hidden"></div>
+                <div id="customizer-options-container" class="customizer-layout"></div>
+            </div>
+
+            <!-- Real-time Stats Footer -->
+            <div id="customizer-stats-summary" class="stats-summary-bar"></div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:15px;">
+                <button class="nasa-btn" data-goto="panel-mission-select">&#8592; SELECT MISSION</button>
+                <button class="nasa-btn btn-primary" onclick="window.NASA_GAME.setupMissionWorld('moon')">
+                    &#128640; LAUNCH WITH THIS DESIGN
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         4. TEAM COOPERATIVE MODE CONSOLE PANEL
+         ====================================================================== -->
+    <div id="panel-team-mode" class="ui-panel hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">TEAM MISSION CONTROL STATIONS</h2>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+                        Cooperative 4-specialist console. Execute station duties to maintain 100% team mission efficiency.
+                    </p>
+                </div>
+                <button class="nav-icon-btn" data-goto="panel-main-menu">&#8592; BACK</button>
+            </div>
+            <div class="panel-body-scroll">
+                <div id="team-roles-container" class="team-roles-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         5. HOW TO PLAY & FLIGHT ACADEMY PANEL
+         ====================================================================== -->
+    <div id="panel-tutorial" class="ui-panel hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <h2 class="panel-title">NASA FLIGHT MANUAL & ACADEMY</h2>
+                <button class="nav-icon-btn" data-goto="panel-main-menu">&#8592; BACK</button>
+            </div>
+            <div class="panel-body-scroll" style="line-height:1.6; font-size:0.92rem;">
+                <h3 style="color:var(--text-cyan); margin-bottom:8px;">FLIGHT CONTROLS (DESKTOP & LAPTOP)</h3>
+                <ul style="margin-left:20px; margin-bottom:18px;">
+                    <li><strong>W / S or &uarr; / &darr; :</strong> Main Engine Throttle (Accelerate / Decelerate)</li>
+                    <li><strong>A / D or &larr; / &rarr; :</strong> Yaw Left / Yaw Right</li>
+                    <li><strong>Q / E :</strong> Roll Left / Roll Right</li>
+                    <li><strong>R / F :</strong> Vertical Strafe (Up / Down)</li>
+                    <li><strong>Z / X :</strong> Lateral Strafe (Left / Right)</li>
+                    <li><strong>SPACEBAR :</strong> Emergency RCS Retro-Brake (Cuts velocity)</li>
+                    <li><strong>C :</strong> Cycle Camera View (3rd Person Chase &bull; 1st Person Cockpit &bull; Cinematic Orbit)</li>
+                    <li><strong>T :</strong> Toggle Flight Assist (SAS Stabilization vs Pure Newtonian Drift)</li>
+                    <li><strong>1, 2, 3 :</strong> Quick trigger [PULSE SCAN], [COLLECT SAMPLE], [TRANSMIT DATA]</li>
+                    <li><strong>P or ESC :</strong> Pause Simulation</li>
+                </ul>
+
+                <h3 style="color:var(--text-cyan); margin-bottom:8px;">MOBILE & TOUCH CONTROLS</h3>
+                <p style="margin-bottom:18px;">
+                    Use the virtual thumbstick on the lower-left corner to steer pitch and yaw. Use the touch buttons along the bottom bar for throttling, scanning, and braking.
+                </p>
+
+                <h3 style="color:var(--text-cyan); margin-bottom:8px;">SPACECRAFT ENGINEERING RULES</h3>
+                <ul style="margin-left:20px; margin-bottom:18px;">
+                    <li><strong>Mass vs Launch Vehicle:</strong> If spacecraft wet mass exceeds launch vehicle payload limit, launch will abort! Upgrade to a heavier rocket or lighten chassis/instruments.</li>
+                    <li><strong>Power Balance:</strong> If net power is negative (drain > solar generation), batteries will drain during flight. RTGs provide continuous power even in deep space.</li>
+                    <li><strong>Delta-V & Specific Impulse:</strong> Higher Isp (like Ion or Nuclear Thermal) provides greater fuel efficiency and velocity change capabilities.</li>
+                </ul>
+
+                <h3 style="color:var(--text-cyan); margin-bottom:8px;">MISSION OBJECTIVES & SCORING</h3>
+                <p>
+                    Follow the holographic 3D target reticle on your HUD. Approach designated checkpoints, fire the science pulse scanner, deploy surface probes, and avoid colliding with tumbling asteroids. Your final score reflects objective completion, scientific data collected, resource conservation, and crisis management.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         6. LEADERBOARD PANEL
+         ====================================================================== -->
+    <div id="panel-leaderboard" class="ui-panel hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <h2 class="panel-title">NASA MISSION FLIGHT ARCHIVES & LEADERBOARD</h2>
+                <button class="nav-icon-btn" data-goto="panel-main-menu">&#8592; BACK</button>
+            </div>
+            <div class="panel-body-scroll">
+                <table class="nasa-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>MISSION NAME</th>
+                            <th>GRADE</th>
+                            <th>FINAL SCORE</th>
+                            <th>DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody"></tbody>
+                </table>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:15px;">
+                <button class="nasa-btn" onclick="window.NASA_GAME.scoring.clearLeaderboard(); window.NASA_GAME.renderLeaderboardUI();">
+                    CLEAR HISTORY
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         7. FINAL MISSION DEBRIEFING REPORT MODAL
+         ====================================================================== -->
+    <div id="panel-report" class="ui-panel hidden">
+        <div class="panel-container" style="max-width:850px;">
+            <div class="panel-body-scroll" id="report-content"></div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         8. LIVE IN-FLIGHT HUD & TELEMETRY OVERLAY
+         ====================================================================== -->
+    <div id="flight-hud" class="nasa-hud hidden">
+        <!-- Notification Banner -->
+        <div id="hud-notification" class="hud-banner hidden">
+            <span id="hud-notification-text">ALERT NOTIFICATION</span>
+        </div>
+
+        <!-- HUD Header -->
+        <div class="hud-header">
+            <!-- Left Telemetry Cluster -->
+            <div class="hud-cluster hud-interactive">
+                <div class="hud-row">
+                    <span style="color:var(--text-amber); width:70px;">FUEL:</span>
+                    <div class="hud-bar-container">
+                        <div id="hud-fuel-bar" class="hud-bar bar-fuel" style="width:100%;"></div>
+                    </div>
+                    <span id="hud-fuel-val">850 kg (100%)</span>
+                </div>
+                <div class="hud-row">
+                    <span style="color:var(--text-cyan); width:70px;">BATTERY:</span>
+                    <div class="hud-bar-container">
+                        <div id="hud-battery-bar" class="hud-bar bar-battery" style="width:100%;"></div>
+                    </div>
+                    <span id="hud-battery-val">100% (+450W)</span>
+                </div>
+                <div class="hud-row">
+                    <span style="color:var(--text-green); width:70px;">HULL:</span>
+                    <div class="hud-bar-container">
+                        <div id="hud-hull-bar" class="hud-bar bar-hull" style="width:100%;"></div>
+                    </div>
+                    <span id="hud-hull-val">100%</span>
+                </div>
+                <div class="hud-row" style="margin-top:6px; font-size:0.75rem; color:var(--text-muted);">
+                    <span>MASS: <b id="hud-mass-val" style="color:#fff;">2,450 kg</b></span>
+                    <span style="margin-left:12px;">BUDGET: <b id="hud-budget-val" style="color:var(--text-green);">$350M</b></span>
+                </div>
+            </div>
+
+            <!-- Center Clock & Mode -->
+            <div class="hud-center-top">
+                <div id="hud-met-val" class="met-clock">MET: 00:00:00</div>
+                <div style="display:flex; gap:8px;">
+                    <span id="hud-sas-status" class="status-indicator green">SAS: ACTIVE</span>
+                    <span id="hud-cam-status" class="status-indicator" style="background:rgba(255,255,255,0.1); color:#fff;">CAM: CHASE</span>
+                </div>
+            </div>
+
+            <!-- Right Objectives Checklist & Science Cluster -->
+            <div class="hud-cluster hud-interactive" style="min-width:260px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:4px;">
+                    <span style="color:var(--text-cyan); font-weight:700;">FLIGHT OBJECTIVES</span>
+                    <span id="hud-science-points" style="color:var(--text-green); font-weight:700;">0 PTS</span>
+                </div>
+                <div id="hud-objective-list" class="hud-objectives-box"></div>
+                <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4px; font-size:0.72rem; color:var(--text-muted);">
+                    <div id="hud-samples-val">0 SAMPLES | 0 GB</div>
+                    <div id="hud-signal-val">98 dB (DSN Locked)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD Bottom Bar -->
+        <div class="hud-bottom">
+            <!-- Navball & Speed Cluster -->
+            <div class="hud-cluster hud-interactive" style="display:flex; align-items:center; gap:16px;">
+                <div class="navball-widget">
+                    <div id="navball-needle"></div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">ORBITAL SPEED</div>
+                    <div id="hud-speed-val" style="font-size:1.4rem; font-weight:700; color:var(--text-cyan);">0.0 km/s</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                        TARGET: <b id="hud-target-name" style="color:#fff;">MOON</b> (<span id="hud-target-dist">750 km</span>)
+                    </div>
+                </div>
+                <!-- Vertical Throttle Gauge -->
+                <div class="throttle-gauge-box">
+                    <span style="font-size:0.65rem; color:var(--text-muted);">THRUST</span>
+                    <div class="throttle-vertical-track">
+                        <div id="hud-throttle-bar"></div>
+                    </div>
+                    <span id="hud-throttle-val" style="font-size:0.7rem; color:var(--text-green);">0%</span>
+                </div>
+            </div>
+
+            <!-- Action Command Buttons -->
+            <div class="flight-actions-bar hud-interactive">
+                <button class="hud-action-btn" onclick="window.NASA_GAME.triggerPulseScan()">
+                    [1] PULSE SCAN
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.triggerCollectSample()">
+                    [2] COLLECT SAMPLE
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.triggerDeployProbe()">
+                    DEPLOY PROBE
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.triggerTransmitData()">
+                    [3] TRANSMIT DSN
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.spacecraft.throttle = 0; window.NASA_GAME.spacecraft.velocity.multiplyScalar(0.7);">
+                    [SPACE] BRAKE
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.toggleFlightAssist()">
+                    [T] SAS
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.cycleCamera()">
+                    [C] CAM
+                </button>
+                <button class="hud-action-btn" onclick="window.NASA_GAME.togglePause()">
+                    [ESC] MENU
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Virtual Joystick Layer -->
+    <div id="mobile-joystick" class="mobile-controls-layer">
+        <div id="touch-joystick-area">
+            <div id="touch-joystick-knob"></div>
+        </div>
+    </div>
+
+    <!-- Random Space Challenge Modal -->
+    <div id="challenge-modal" class="modal-backdrop hidden">
+        <div class="challenge-box">
+            <h3 id="challenge-title" class="challenge-title">CRITICAL ALERT</h3>
+            <p id="challenge-desc" class="challenge-desc"></p>
+            <div id="challenge-choices" class="challenge-choices"></div>
+        </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div id="pause-overlay" class="modal-backdrop hidden">
+        <div class="hero-box" style="background:var(--bg-panel); border:1px solid var(--text-cyan); padding:30px; border-radius:12px;">
+            <h2 class="hero-title" style="font-size:2rem;">SIMULATION PAUSED</h2>
+            <div class="menu-button-group" style="margin-top:20px;">
+                <button class="nasa-btn btn-primary" onclick="window.NASA_GAME.togglePause()">&#9658; RESUME FLIGHT</button>
+                <button class="nasa-btn" onclick="window.NASA_GAME.switchUIPanel('panel-main-menu'); window.NASA_GAME.setupMenuEnvironment(); window.NASA_GAME.togglePause();">
+                    &#8634; ABORT & RETURN TO MENU
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries (Bundled Three.js and OrbitControls) -->
+    <script src="lib/three.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+
+    <!-- Game Modular Source Files -->
+    <script src="js/audio.js"></script>
+    <script src="js/celestial.js"></script>
+    <script src="js/spacecraft.js"></script>
+    <script src="js/engine3d.js"></script>
+    <script src="js/missions.js"></script>
+    <script src="js/customizer.js"></script>
+    <script src="js/teamMode.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/hud.js"></script>
+    <script src="js/scoring.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
